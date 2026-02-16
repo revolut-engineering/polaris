@@ -20,7 +20,7 @@
 # Base Image
 # Use a non-docker-io registry, because pulling images from docker.io is
 # subject to aggressive request rate limiting and bandwidth shaping.
-FROM registry.access.redhat.com/ubi9/openjdk-21:1.20-2.1721752936 as build
+FROM registry.access.redhat.com/ubi9/openjdk-21:1.20-2.1721752936 AS build
 ARG ECLIPSELINK=false
 
 # Copy the REST catalog into the container
@@ -30,17 +30,23 @@ COPY --chown=default:root . /app
 WORKDIR /app
 RUN rm -rf build
 
-# Build the rest catalog
+# Normalize line endings for shell scripts (fix CRLF issue on Windows)
+RUN find . -type f -name "*.sh" -exec sed -i 's/\r$//' {} +
+RUN sed -i 's/\r$//' gradlew
+
+# Build the REST catalog
 RUN ./gradlew --no-daemon --info -PeclipseLink=$ECLIPSELINK clean shadowJar startScripts
+
 
 FROM registry.access.redhat.com/ubi9/openjdk-21-runtime:1.20-2.1721752928
 WORKDIR /app
+
 COPY --from=build /app/polaris-service/build/libs/polaris-service-all.jar /app/lib/polaris-service-all.jar
 COPY --from=build /app/polaris-server.yml /app
 COPY --from=build /app/polaris-service/build/scripts/polaris-service /app/bin/polaris-service
 
 EXPOSE 8181
 
-# Run the resulting java binary
+# Run the resulting Java binary
 ENTRYPOINT ["/app/bin/polaris-service"]
 CMD ["server", "polaris-server.yml"]
