@@ -39,6 +39,17 @@ Join us on the [Apache Polaris public chat](https://polaris-catalog.zulipchat.co
 
 See [CONTRIBUTING](CONTRIBUTING.md) for contribution requirements.
 
+## Prerequisites
+
+Before building and running Apache Polaris, ensure the following are installed:
+
+- Java 21 or later
+- Docker 27 or later (Docker must be running for integration tests)
+
+The Gradle wrapper (`./gradlew`) is included in the repository, so a separate Gradle installation is not required.
+
+
+
 ## Building and Running 
 
 Apache Polaris is organized into the following modules:
@@ -46,7 +57,7 @@ Apache Polaris is organized into the following modules:
 - `polaris-server` - The Polaris REST API server
 - `polaris-eclipselink` - The Eclipselink implementation of the MetaStoreManager interface
  
-Apache Polaris is built using Gradle with Java 21+ and Docker 27+.
+Apache Polaris is built using the Gradle wrapper with Java 21+ and Docker 27+.
 - `./gradlew build` - To build and run tests. Make sure Docker is running, as the integration tests depend on it.
 - `./gradlew assemble` - To skip tests.
 - `./gradlew test` - To run unit tests and integration tests.
